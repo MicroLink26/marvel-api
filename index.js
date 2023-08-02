@@ -9,10 +9,13 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 app.use(cors());
+mongoose.connect(process.env.MONGODB_URI);
+const userRoutes = require("./routes/user");
 
 app.get("/", (req, res) => {
   res.status(200).json("Bienvenue sur l'API de Marvel");
 });
+app.use(userRoutes);
 
 app.get("/comics", async (req, res) => {
   let query = "";

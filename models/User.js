@@ -11,12 +11,15 @@ const User = mongoose.model("User", {
       required: true,
       type: String,
     },
-    avatar: Object,
   },
   newsletter: Boolean,
   token: String,
   hash: String,
   salt: String,
+  favorites: {
+    characters: [String],
+    comics: [String],
+  },
 });
 
 module.exports = User;

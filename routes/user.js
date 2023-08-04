@@ -7,37 +7,10 @@ const router = express.Router();
 const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
-
-// Middleware permettant de recevoir des formData
-//const fileUpload = require("express-fileupload");
-// Fonction permettant de transformer un Buffer en Base64
-//const convertToBase64 = require("../utils/convertToBase64");
-// Import du package cloudinary
-//const cloudinary = require("cloudinary").v2;
-
-// Import du model User et Offer
-// afin d'éviter des erreurs (notamment dues à d'eventuelles références entre les collections)
-// nous vous conseillons d'importer touts vos models dans toutes vos routes
-//
-// nous avons besoin de User pour effectuer une recherche dans la BDD
-// afin de savoir :
-// - si un utilisateur ayant le même email existe déjà ou pas (route signup)
-// - quel est l'utilisateur qui souhaite se connecter (route login)
+const isAuthenticated = require("../middleware/isAuthenticated");
 const User = require("../models/User");
-//const Offer = require("../models/Offer");
 
-// déclaration de la route signup, utilisation de fileUpload pour réceptionner des formData
 router.post("/user/signup", async (req, res) => {
-  // #swagger.summary = 'Create a new user'
-
-  /*  #swagger.parameters['parameter_name'] = {
-                in: 'body',
-                description: 'Some description...',
-                schema:  { 
-                  $ref: '#/definitions/AddUser'
-                }
-        } */
-
   try {
     // Recherche dans la BDD. Est-ce qu'un utilisateur possède cet email ?
     const user = await User.findOne({ email: req.body.email });
@@ -90,23 +63,10 @@ router.post("/user/signup", async (req, res) => {
 });
 
 router.post("/user/login", async (req, res) => {
-  // #swagger.summary = 'Log a user'
-  /*  #swagger.parameters['parameter_name'] = {
-                in: 'body',
-                description: 'Some description...',
-                schema:  { 
-                  $ref: '#/definitions/LogInUser'
-                }
-        } */
-
   try {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
-      // Est-ce qu'il a rentré le bon mot de passe ?
-      // req.body.password
-      // user.hash
-      // user.salt
       if (
         SHA256(req.body.password + user.salt).toString(encBase64) === user.hash
       ) {
@@ -125,6 +85,33 @@ router.post("/user/login", async (req, res) => {
     console.log(error.message);
     res.status(500).json({ message: error.message });
   }
+});
+
+router.get("/user/favorites", isAuthenticated, async (req, res) => {
+  try {
+    //get user
+    const user = await User.findById(req.user._id);
+
+    res.status(200).json(user.favorites);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/user/favorites", isAuthenticated, async (req, res) => {
+  try {
+    //get user
+    const user = await User.findById(req.user._id);
+    const { characters, comics } = req.body;
+
+    user.favorites = {
+      characters,
+      comics,
+    };
+    console.log(user);
+    await user.save();
+    res.status(200).json("favorites added");
+  } catch (error) {}
 });
 
 module.exports = router;

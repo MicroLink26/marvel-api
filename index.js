@@ -13,7 +13,11 @@ mongoose.connect(process.env.MONGODB_URI);
 const userRoutes = require("./routes/user");
 
 app.get("/", (req, res) => {
-  res.status(200).json("Bienvenue sur l'API de Marvel");
+  try {
+    res.status(200).json("Bienvenue sur l'API de Marvel");
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 });
 app.use(userRoutes);
 

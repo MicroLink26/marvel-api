@@ -105,7 +105,7 @@ router.post("/user/favorites", isAuthenticated, async (req, res) => {
       characters,
       comics,
     };
-    console.log(user);
+    //console.log(user);
     await user.save();
     res.status(200).json("favorites added");
   } catch (error) {}

@@ -55,24 +55,6 @@ app.get("/comic/:id", async (req, res) => {
   } catch (error) {}
 });
 
-app.post("/characters", async (req, res) => {
-  const charactersList = [];
-  const { characters } = req.body;
-  //console.log(characters);
-  if (characters)
-    for await (const character of characters) {
-      try {
-        const response = await axios.get(
-          `https://lereacteur-marvel-api.herokuapp.com/character/${character}?apiKey=${process.env.API_KEY}`
-        );
-        charactersList.push(response.data);
-      } catch (error) {}
-    }
-
-  //console.log(charactersList);
-  res.status(200).json(charactersList);
-});
-
 app.post("/comics", async (req, res) => {
   const comicsList = [];
   const { comics } = req.body;
@@ -101,11 +83,6 @@ app.get("/characters", async (req, res) => {
 
   if (name) query += `name=${name}&`;
 
-  // console.log(
-  //   req.query,
-  //   `https://lereacteur-marvel-api.herokuapp.com/characters?${query}apiKey=${process.env.API_KEY}`
-  // );
-
   try {
     const response = await axios.get(
       `https://lereacteur-marvel-api.herokuapp.com/characters?${query}apiKey=${process.env.API_KEY}`
@@ -123,6 +100,24 @@ app.get("/character/:id", async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {}
+});
+
+app.post("/characters", async (req, res) => {
+  const charactersList = [];
+  const { characters } = req.body;
+  //console.log(characters);
+  if (characters)
+    for await (const character of characters) {
+      try {
+        const response = await axios.get(
+          `https://lereacteur-marvel-api.herokuapp.com/character/${character}?apiKey=${process.env.API_KEY}`
+        );
+        charactersList.push(response.data);
+      } catch (error) {}
+    }
+
+  //console.log(charactersList);
+  res.status(200).json(charactersList);
 });
 
 app.all("*", (req, res) => {

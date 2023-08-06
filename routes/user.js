@@ -89,10 +89,7 @@ router.post("/user/login", async (req, res) => {
 
 router.get("/user/favorites", isAuthenticated, async (req, res) => {
   try {
-    //get user
-    const user = await User.findById(req.user._id);
-
-    res.status(200).json(user.favorites);
+    res.status(200).json(req.user.favorites);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

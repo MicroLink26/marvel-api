@@ -7,7 +7,9 @@ const isAuthenticated = async (req, res, next) => {
       // Enlever "Bearer " du token reçu
       const token = req.headers.authorization.replace("Bearer ", "");
       // Chercher dans la BDD un user qui a ce token en ne récupérant que les clef account et _id
-      const user = await User.findOne({ token: token }).select("account _id");
+      const user = await User.findOne({ token: token }).select(
+        "favorites account _id"
+      );
       // Si on en trouve un
       if (user) {
         // On rajoute une clef user à req contenant le user trouvé
